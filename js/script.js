@@ -70,31 +70,27 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadPhotos() {
   showLoader(true);
   try {
-    // Récupère les photos depuis notre API locale (à créer si Next.js)
-    // ou directement depuis Cloudinary via l'endpoint de recherche
     const res = await fetch(
-    `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/v1/famille.json`
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/image?prefix=famille&max_results=500`,
+      {
+        headers: {
+          Authorization: `Basic ${btoa(CLOUDINARY_API_KEY + ':' + CLOUDINARY_API_SECRET)}`
+        }
+      }
     );
-
-    if (!res.ok) throw new Error('Erreur chargement');
     const data = await res.json();
-
-    // Transforme les ressources Cloudinary en objets photo
     allPhotos = (data.resources || []).map(r => ({
-      id:       r.public_id,
-      url:      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/q_auto,f_auto/${r.public_id}`,
-      thumb:    `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/q_auto,f_auto,w_400/${r.public_id}`,
-      title:    r.context?.custom?.title || '',
-      year:     r.context?.custom?.year  || '',
+      id:    r.public_id,
+      url:   r.secure_url,
+      thumb: r.secure_url.replace('/upload/', '/upload/q_auto,f_auto,w_400/'),
+      title: r.context?.custom?.title || '',
+      year:  r.context?.custom?.year  || '',
     }));
-
     renderPhotos();
     buildYearFilters();
     updateCount();
   } catch (err) {
-    console.error('Erreur chargement photos :', err);
-    // Si l'endpoint liste ne fonctionne pas, essayer l'API locale
-    await loadFromLocalAPI();
+    showToast('Impossible de charger les photos', 'error');
   } finally {
     showLoader(false);
   }
