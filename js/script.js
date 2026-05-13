@@ -3,7 +3,7 @@
    ⬇️ Modifiez ces 3 valeurs avec vos identifiants
 ═══════════════════════════════════════════════════ */
 const CLOUDINARY_CLOUD_NAME  = 'dadn3kdka';   // ← Remplacez par votre Cloud Name
-const CLOUDINARY_UPLOAD_PRESET = 'famille_upload'; // ← Remplacez par votre Upload Preset (unsigned)
+const CLOUDINARY_UPLOAD_PRESET = 'famille'; // ← Remplacez par votre Upload Preset (unsigned)
 const CLOUDINARY_API_KEY     = '796141492411819';       // ← Remplacez par votre API Key
 
 /* ═══════════════════════════════════════════════════
