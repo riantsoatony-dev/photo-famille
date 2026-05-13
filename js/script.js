@@ -73,7 +73,7 @@ async function loadPhotos() {
     // Récupère les photos depuis notre API locale (à créer si Next.js)
     // ou directement depuis Cloudinary via l'endpoint de recherche
     const res = await fetch(
-      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/famille.json`
+    `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/v1/famille.json`
     );
 
     if (!res.ok) throw new Error('Erreur chargement');
