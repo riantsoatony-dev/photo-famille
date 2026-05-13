@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2c1810" />
+  <meta name="description" content="Notre galerie de souvenirs en famille" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Famille" />
+  <link rel="apple-touch-icon" href="photo.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <title>Notre Famille — Souvenirs</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════
+       EN-TÊTE
+  ═══════════════════════════════════ -->
+  <header class="header">
+    <div class="header__bg"></div>
+    <div class="header__content">
+      <div class="header__ornament">✦</div>
+      <h1 class="header__title">Nos Souvenirs</h1>
+      <p class="header__subtitle">Chaque photo, une histoire à chérir</p>
+      <div class="header__stats">
+        <span id="photoCount">— photos</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════
+       FILTRES PAR ANNÉE
+  ═══════════════════════════════════ -->
+  <nav class="filters" id="filtersBar">
+    <div class="filters__inner" id="filtersList">
+      <button class="filter-btn active" data-year="all">Tout</button>
+      <!-- Les années s'ajoutent dynamiquement -->
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════
+       ÉTAT DE CHARGEMENT
+  ═══════════════════════════════════ -->
+  <div class="loader" id="loader">
+    <div class="loader__ring"></div>
+    <p class="loader__text">Chargement des souvenirs…</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       ÉTAT VIDE
+  ═══════════════════════════════════ -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-state__icon">📷</div>
+    <p class="empty-state__text">Aucune photo pour le moment</p>
+    <p class="empty-state__sub">Appuyez sur + pour ajouter la première !</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       GALERIE
+  ═══════════════════════════════════ -->
+  <main class="gallery" id="gallery">
+    <!-- Les photos sont injectées ici par JS -->
+  </main>
+
+  <!-- ═══════════════════════════════════
+       BOUTON FLOTTANT AJOUTER
+  ═══════════════════════════════════ -->
+  <button class="fab" id="fabBtn" aria-label="Ajouter une photo">
+    <span class="fab__icon">+</span>
+  </button>
+
+  <!-- ═══════════════════════════════════
+       MODAL AJOUT PHOTO
+  ═══════════════════════════════════ -->
+  <div class="modal" id="uploadModal" role="dialog" aria-modal="true" aria-label="Ajouter une photo">
+    <div class="modal__backdrop" id="uploadBackdrop"></div>
+    <div class="modal__sheet">
+      <div class="modal__handle"></div>
+      <h2 class="modal__title">Ajouter une photo</h2>
+
+      <!-- Zone de drop / sélection -->
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" hidden />
+        <div class="upload-zone__preview" id="uploadPreview" style="display:none">
+          <img id="previewImg" src="" alt="Aperçu" />
+          <button class="upload-zone__clear" id="clearPreview" aria-label="Changer la photo">✕</button>
+        </div>
+        <div class="upload-zone__placeholder" id="uploadPlaceholder">
+          <span class="upload-zone__icon">🖼️</span>
+          <p>Appuyez pour choisir une photo</p>
+          <span class="upload-zone__hint">ou glissez-déposez ici</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="titleInput">Titre <span class="optional">(optionnel)</span></label>
+        <input class="form-input" type="text" id="titleInput" placeholder="Ex: Noël 2024" maxlength="60" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="yearInput">Année</label>
+        <input class="form-input" type="number" id="yearInput" placeholder="2024" min="1900" max="2099" />
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--secondary" id="cancelUpload">Annuler</button>
+        <button class="btn btn--primary" id="confirmUpload" disabled>
+          <span class="btn__text">Envoyer</span>
+          <span class="btn__loader" style="display:none">…</span>
+        </button>
+      </div>
+
+      <!-- Barre de progression -->
+      <div class="progress-bar" id="progressBar" style="display:none">
+        <div class="progress-bar__fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       LIGHTBOX
+  ═══════════════════════════════════ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox__backdrop" id="lightboxBackdrop"></div>
+
+    <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">✕</button>
+    <button class="lightbox__delete" id="lightboxDelete" aria-label="Supprimer">🗑</button>
+
+    <button class="lightbox__nav lightbox__nav--prev" id="lightboxPrev" aria-label="Photo précédente">‹</button>
+    <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" aria-label="Photo suivante">›</button>
+
+    <div class="lightbox__container">
+      <img class="lightbox__img" id="lightboxImg" src="" alt="" />
+      <div class="lightbox__info">
+        <p class="lightbox__title" id="lightboxTitle"></p>
+        <p class="lightbox__year" id="lightboxYear"></p>
+        <p class="lightbox__counter" id="lightboxCounter"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TOAST NOTIFICATIONS
+  ═══════════════════════════════════ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Modal confirmation suppression -->
+  <div class="confirm-modal" id="confirmModal" style="display:none">
+    <div class="confirm-modal__backdrop" id="confirmBackdrop"></div>
+    <div class="confirm-modal__box">
+      <p class="confirm-modal__text">Supprimer cette photo ?</p>
+      <div class="confirm-modal__actions">
+        <button class="btn btn--secondary" id="confirmNo">Annuler</button>
+        <button class="btn btn--danger" id="confirmYes">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

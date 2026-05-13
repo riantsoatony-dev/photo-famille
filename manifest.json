@@ -1,0 +1,27 @@
+{
+  "name": "Notre Famille — Souvenirs",
+  "short_name": "Famille",
+  "description": "Notre espace photos de famille",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#2c1810",
+  "theme_color": "#2c1810",
+  "categories": ["photo", "lifestyle"],
+  "icons": [
+    {
+      "src": "/photo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/photo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "lang": "fr"
+}
